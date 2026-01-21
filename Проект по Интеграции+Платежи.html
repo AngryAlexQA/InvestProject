@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Dashboard - Gantt & Roadmap</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide-react@latest"></script>
+    <script>
+        // Экспорт lucide icons в глобальную область видимости
+        const {
+            Calendar, Users, DollarSign, FileText, ChevronDown, ChevronRight
+        } = lucideReact;
+        
+        window.lucideIcons = {
+            Calendar, Users, DollarSign, FileText, ChevronDown, ChevronRight
+        };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #f9fafb;
+            margin: 0;
+            padding: 0;
+        }
+        /* Стили для скролла */
+        .overflow-x-auto {
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 #f1f5f9;
+        }
+        .overflow-x-auto::-webkit-scrollbar {
+            height: 8px;
+        }
+        .overflow-x-auto::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        .overflow-x-auto::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+        const { Calendar, Users, DollarSign, FileText, ChevronDown, ChevronRight } = window.lucideIcons;
+
+        const ProjectDashboard = () => {
+            const [activeTab, setActiveTab] = useState('gantt');
+            const [expandedStages, setExpandedStages] = useState({1: true, 2: true, 3: true, 4: true});
+
+            const toggleStage = (stageId) => {
+                setExpandedStages(prev => ({...prev, [stageId]: !prev[stageId]}));
+            };
+
+            const projectData = {
+                name: "Электронный финансовый документооборот, качество и контроль данных, управление платежами",
+                duration: "4 кв 2025 - 3 кв 2026",
+                team: "4 Аналитика + 3 Разработчика + 2 Методолога",
+                budget: {
+                    fot: "32 400 ₽",
+                    investment: "52 314 ₽",
+                    total: "84 714 ₽"
+                }
+            };
+
+            const stages = [
+                {
+                    id: 1,
+                    name: "Этап 1: Взаиморасчеты с контрагентами",
+                    period: "1 кв 2025 - 2 кв 2026",
+                    team: "2А + 2Р",
+                    budget: "-",
+                    color: "bg-blue-500",
+                    tasks: [
+                        { name: "Совершенствование механизма распознавания входящих платежей", start: "окт.25", end: "янв.26" },
+                        { name: "Перенос остатков задолженности", start: "янв.26", end: "мар.26" },
+                        { name: "Запуск обмена договорами 1С:ДО → 1С:БП", start: "янв.26", end: "мар.26" },
+                        { name: "Внедрение инструментов автоматической сверки", start: "дек.25", end: "мар.26" },
+                        { name: "Проработка списка доверенных лиц", start: "янв.26", end: "мар.26" },
+                        { name: "Создание отчетов по задолженности", start: "янв.26", end: "апр.26" },
+                        { name: "Наполнение данных", start: "фев.26", end: "июл.26" }
+                    ]
+                },
+                {
+                    id: 2,
+                    name: "Этап 2: Сквозной ЭДО и оцифровка",
+                    period: "окт.25 - 2 кв 2026",
+                    team: "4А + 3Р",
+                    budget: "19 000 ₽",
+                    color: "bg-green-500",
+                    tasks: [
+                        { name: "2.1 Интеграция Диадок → 1С:ДО → 1С:Архив → 1С:БП", start: "ноя.25", end: "июн.26" },
+                        { name: "Приобретение ПП 1С:Архив (117 ₽)", start: "дек.25", end: "дек.25" },
+                        { name: "Приобретение оборудования и лицензий (13 000 ₽)", start: "фев.26", end: "фев.26" },
+                        { name: "Нормализация НСИ", start: "дек.25", end: "фев.26" },
+                        { name: "Настройка мастер-системы для НСИ", start: "ноя.25", end: "мар.26" },
+                        { name: "Разработка On-premise решения с ИИ", start: "фев.26", end: "июн.26" },
+                        { name: "Настройка правил обмена ПУД в ЭДО", start: "янв.26", end: "мар.26" },
+                        { name: "Настройка унифицированных форм договоров", start: "дек.25", end: "апр.26" },
+                        { name: "Автоматическая загрузка ЭДО документов", start: "фев.26", end: "июн.26" },
+                        { name: "2.2 Распознавание бумажных документов (1 000 ₽)", start: "окт.25", end: "июл.26" },
+                        { name: "Внедрение модуля распознавания 1С", start: "окт.25", end: "мар.26" },
+                        { name: "Настройка шаблонов и правил для ПУД", start: "фев.26", end: "апр.26" },
+                        { name: "Создание маршрутов для бумажных документов", start: "апр.26", end: "июл.26" },
+                        { name: "Внедрение маршрутов согласования ПУД", start: "май.26", end: "июл.26" }
+                    ]
+                },
+                {
+                    id: 3,
+                    name: "Этап 3: Консолидация баз 1С",
+                    period: "1 кв 26 - 2-3 кв 2026",
+                    team: "2А + 2Р",
+                    budget: "10 000 ₽",
+                    color: "bg-purple-500",
+                    tasks: [
+                        { name: "Сжатие базы данных 1С (перенос остатков)", start: "апр.26", end: "май.26" },
+                        { name: "Объединение бухгалтерских баз", start: "апр.26", end: "авг.26" },
+                        { name: "Создание единых отчетов по группе компаний", start: "мар.26", end: "авг.26" }
+                    ]
+                },
+                {
+                    id: 4,
+                    name: "Этап 4: Автоматизация управления платежами",
+                    period: "3 кв 2026 - 4 кв 2026",
+                    team: "2А + 2Р + 2М",
+                    budget: "17 314 ₽",
+                    color: "bg-orange-500",
+                    tasks: [
+                        { name: "Приобретение ПО и лицензий (3 314 ₽)", start: "июл.26", end: "июл.26" },
+                        { name: "Разработка ролевой модели и настройка обменов", start: "апр.26", end: "авг.26" },
+                        { name: "Формирование ЗРДС", start: "май.26", end: "сен.26" },
+                        { name: "Формирование платежного календаря", start: "июн.26", end: "сен.26" }
+                    ]
+                }
+            ];
+
+            const timeline = [
+                "окт.25", "ноя.25", "дек.25", "янв.26", "фев.26", "мар.26", 
+                "апр.26", "май.26", "июн.26", "июл.26", "авг.26", "сен.26"
+            ];
+
+            const getTaskPosition = (start, end) => {
+                const startIdx = timeline.indexOf(start);
+                const endIdx = timeline.indexOf(end);
+                if (startIdx === -1 || endIdx === -1) return { left: '0%', width: '0%' };
+                const left = (startIdx / timeline.length) * 100;
+                const width = ((endIdx - startIdx + 1) / timeline.length) * 100;
+                return { left: `${left}%`, width: `${width}%` };
+            };
+
+            const resourcePlan = [
+                { role: "Бизнес-аналитики", count: 4, stages: "Все этапы", load: "100%", notes: "Требуется найм" },
+                { role: "Разработчики", count: 3, stages: "Все этапы", load: "100%", notes: "Требуется найм" },
+                { role: "Методологи", count: 2, stages: "Этап 4", load: "50%", notes: "Требуется найм" },
+                { role: "Всего к найму", count: 9, stages: "-", load: "-", notes: "До начала проекта" }
+            ];
+
+            const budgetBreakdown = [
+                { category: "ФОТ операционный", amount: "32 400 ₽", percent: "38%" },
+                { category: "Этап 2.1: Интеграция ЭДО", amount: "13 117 ₽", percent: "15%" },
+                { category: "Этап 3: Консолидация баз", amount: "10 000 ₽", percent: "12%" },
+                { category: "Этап 4: Управление платежами", amount: "17 314 ₽", percent: "20%" },
+                { category: "Этап 2.2: Распознавание документов", amount: "1 000 ₽", percent: "1%" },
+                { category: "Прочие инвестиции", amount: "10 883 ₽", percent: "13%" }
+            ];
+
+            return (
+                <div className="w-full max-w-7xl mx-auto p-6 bg-gray-50">
+                    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+                        <h1 className="text-2xl font-bold text-gray-800 mb-4">
+                            {projectData.name}
+                        </h1>
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div className="flex items-center gap-2">
+                                <Calendar className="text-blue-600" size={20} />
+                                <div>
+                                    <div className="text-sm text-gray-500">Период</div>
+                                    <div className="font-semibold">{projectData.duration}</div>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Users className="text-green-600" size={20} />
+                                <div>
+                                    <div className="text-sm text-gray-500">Команда</div>
+                                    <div className="font-semibold">12 человек</div>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <DollarSign className="text-orange-600" size={20} />
+                                <div>
+                                    <div className="text-sm text-gray-500">Бюджет</div>
+                                    <div className="font-semibold">{projectData.budget.total}</div>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <FileText className="text-purple-600" size={20} />
+                                <div>
+                                    <div className="text-sm text-gray-500">Этапов</div>
+                                    <div className="font-semibold">4</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-lg shadow-md mb-6">
+                        <div className="flex border-b overflow-x-auto">
+                            <button
+                                onClick={() => setActiveTab('gantt')}
+                                className={`px-6 py-3 font-semibold whitespace-nowrap ${
+                                    activeTab === 'gantt' 
+                                        ? 'border-b-2 border-blue-600 text-blue-600' 
+                                        : 'text-gray-600 hover:text-gray-800'
+                                }`}
+                            >
+                                Диаграмма Ганта
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('roadmap')}
+                                className={`px-6 py-3 font-semibold whitespace-nowrap ${
+                                    activeTab === 'roadmap' 
+                                        ? 'border-b-2 border-blue-600 text-blue-600' 
+                                        : 'text-gray-600 hover:text-gray-800'
+                                }`}
+                            >
+                                Road-map
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('resources')}
+                                className={`px-6 py-3 font-semibold whitespace-nowrap ${
+                                    activeTab === 'resources' 
+                                        ? 'border-b-2 border-blue-600 text-blue-600' 
+                                        : 'text-gray-600 hover:text-gray-800'
+                                }`}
+                            >
+                                Ресурсный план
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('budget')}
+                                className={`px-6 py-3 font-semibold whitespace-nowrap ${
+                                    activeTab === 'budget' 
+                                        ? 'border-b-2 border-blue-600 text-blue-600' 
+                                        : 'text-gray-600 hover:text-gray-800'
+                                }`}
+                            >
+                                Бюджет
+                            </button>
+                        </div>
+
+                        {activeTab === 'gantt' && (
+                            <div className="p-6">
+                                <h2 className="text-xl font-bold mb-4">Диаграмма Ганта</h2>
+                                <div className="overflow-x-auto">
+                                    <div className="flex mb-2 ml-96 min-w-max">
+                                        {timeline.map((month, idx) => (
+                                            <div key={idx} className="flex-1 text-center text-xs font-semibold text-gray-600 border-l border-gray-300 px-1 min-w-16">
+                                                {month}
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {stages.map((stage) => (
+                                        <div key={stage.id} className="mb-6 min-w-max">
+                                            <div className="flex items-center mb-2">
+                                                <button
+                                                    onClick={() => toggleStage(stage.id)}
+                                                    className="mr-2 text-gray-600 hover:text-gray-800"
+                                                >
+                                                    {expandedStages[stage.id] ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
+                                                </button>
+                                                <div className="w-80">
+                                                    <div className="font-semibold text-gray-800">{stage.name}</div>
+                                                    <div className="text-xs text-gray-500">
+                                                        {stage.team} | Бюджет: {stage.budget}
+                                                    </div>
+                                                </div>
+                                                <div className="flex-1 relative h-8 ml-4 min-w-96">
+                                                    <div
+                                                        className={`absolute ${stage.color} opacity-30 h-full rounded`}
+                                                        style={getTaskPosition(stage.tasks[0].start, stage.tasks[stage.tasks.length - 1].end)}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {expandedStages[stage.id] && stage.tasks.map((task, idx) => (
+                                                <div key={idx} className="ml-8 mb-1 min-w-max">
+                                                    <div className="flex items-center">
+                                                        <div className="w-72 text-sm text-gray-700 pr-2">
+                                                            {task.name}
+                                                        </div>
+                                                        <div className="flex-1 relative h-6 ml-4 min-w-96">
+                                                            <div
+                                                                className={`absolute ${stage.color} h-full rounded`}
+                                                                style={getTaskPosition(task.start, task.end)}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'roadmap' && (
+                            <div className="p-6">
+                                <h2 className="text-xl font-bold mb-4">Стратегический Road-map</h2>
+                                <div className="space-y-4">
+                                    {stages.map((stage, idx) => (
+                                        <div key={stage.id} className="relative">
+                                            <div className="flex items-start">
+                                                <div className={`${stage.color} text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0`}>
+                                                    {idx + 1}
+                                                </div>
+                                                <div className="ml-4 flex-1">
+                                                    <div className="bg-white border-2 border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow">
+                                                        <h3 className="font-bold text-lg mb-2">{stage.name}</h3>
+                                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm mb-3">
+                                                            <div>
+                                                                <span className="text-gray-500">Период:</span>
+                                                                <span className="ml-2 font-semibold">{stage.period}</span>
+                                                            </div>
+                                                            <div>
+                                                                <span className="text-gray-500">Команда:</span>
+                                                                <span className="ml-2 font-semibold">{stage.team}</span>
+                                                            </div>
+                                                            <div>
+                                                                <span className="text-gray-500">Бюджет:</span>
+                                                                <span className="ml-2 font-semibold">{stage.budget}</span>
+                                                            </div>
+                                                        </div>
+                                                        <div className="text-sm text-gray-700">
+                                                            <div className="font-semibold mb-1">Ключевые задачи:</div>
+                                                            <ul className="list-disc list-inside space-y-1">
+                                                                {stage.tasks.map((task, tidx) => (
+                                                                    <li key={tidx}>{task.name}</li>
+                                                                ))}
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {idx < stages.length - 1 && (
+                                                <div className="ml-6 h-8 w-0.5 bg-gray-300"></div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'resources' && (
+                            <div className="p-6">
+                                <h2 className="text-xl font-bold mb-4">Ресурсный план</h2>
+                                <div className="mb-6">
+                                    <div className="bg-blue-50 border-l-4 border-blue-600 p-4 mb-4">
+                                        <div className="font-semibold text-blue-900">Общая потребность в персонале</div>
+                                        <div className="text-blue-800">Требуется найм 9 сотрудников до начала проекта</div>
+                                    </div>
+                                </div>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full border-collapse min-w-max">
+                                        <thead>
+                                            <tr className="bg-gray-100">
+                                                <th className="border border-gray-300 px-4 py-2 text-left">Роль</th>
+                                                <th className="border border-gray-300 px-4 py-2 text-center">Количество</th>
+                                                <th className="border border-gray-300 px-4 py-2 text-left">Этапы</th>
+                                                <th className="border border-gray-300 px-4 py-2 text-center">Загрузка</th>
+                                                <th className="border border-gray-300 px-4 py-2 text-left">Примечания</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {resourcePlan.map((resource, idx) => (
+                                                <tr key={idx} className={idx === resourcePlan.length - 1 ? 'bg-yellow-50 font-semibold' : 'hover:bg-gray-50'}>
+                                                    <td className="border border-gray-300 px-4 py-2">{resource.role}</td>
+                                                    <td className="border border-gray-300 px-4 py-2 text-center">{resource.count}</td>
+                                                    <td className="border border-gray-300 px-4 py-2">{resource.stages}</td>
+                                                    <td className="border border-gray-300 px-4 py-2 text-center">{resource.load}</td>
+                                                    <td className="border border-gray-300 px-4 py-2">{resource.notes}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="bg-white border rounded-lg p-4">
+                                        <h3 className="font-bold mb-3">Распределение по этапам</h3>
+                                        <div className="space-y-2">
+                                            <div className="flex justify-between items-center">
+                                                <span>Этап 1:</span>
+                                                <span className="font-semibold">2А + 2Р (4 чел.)</span>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <span>Этап 2:</span>
+                                                <span className="font-semibold">4А + 3Р (7 чел.)</span>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <span>Этап 3:</span>
+                                                <span className="font-semibold">2А + 2Р (4 чел.)</span>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <span>Этап 4:</span>
+                                                <span className="font-semibold">2А + 2Р + 2М (6 чел.)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="bg-white border rounded-lg p-4">
+                                        <h3 className="font-bold mb-3">Ключевые риски</h3>
+                                        <ul className="space-y-2 text-sm">
+                                            <li className="flex items-start">
+                                                <span className="text-red-500 mr-2">⚠</span>
+                                                <span>Сложность найма 9 квалифицированных специалистов</span>
+                                            </li>
+                                            <li className="flex items-start">
+                                                <span className="text-orange-500 mr-2">⚠</span>
+                                                <span>Параллельная загрузка команды на нескольких этапах</span>
+                                            </li>
+                                            <li className="flex items-start">
+                                                <span className="text-yellow-500 mr-2">⚠</span>
+                                                <span>Методологи требуются только на Этапе 4</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'budget' && (
+                            <div className="p-6">
+                                <h2 className="text-xl font-bold mb-4">Структура бюджета проекта</h2>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div className="bg-blue-50 rounded-lg p-4">
+                                        <div className="text-sm text-blue-600 mb-1">ФОТ операционный</div>
+                                        <div className="text-2xl font-bold text-blue-900">{projectData.budget.fot}</div>
+                                        <div className="text-sm text-blue-700 mt-1">Зарплата команды</div>
+                                    </div>
+                                    <div className="bg-green-50 rounded-lg p-4">
+                                        <div className="text-sm text-green-600 mb-1">Инвестиционный бюджет</div>
+                                        <div className="text-2xl font-bold text-green-900">{projectData.budget.investment}</div>
+                                        <div className="text-sm text-green-700 mt-1">ПО и оборудование</div>
+                                    </div>
+                                    <div className="bg-purple-50 rounded-lg p-4">
+                                        <div className="text-sm text-purple-600 mb-1">Итого бюджет 2026</div>
+                                        <div className="text-2xl font-bold text-purple-900">{projectData.budget.total}</div>
+                                        <div className="text-sm text-purple-700 mt-1">Общие затраты</div>
+                                    </div>
+                                </div>
+
+                                <h3 className="font-bold mb-3">Детализация инвестиционного бюджета</h3>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full border-collapse mb-6 min-w-max">
+                                        <thead>
+                                            <tr className="bg-gray-100">
+                                                <th className="border border-gray-300 px-4 py-2 text-left">Категория</th>
+                                                <th className="border border-gray-300 px-4 py-2 text-right">Сумма</th>
+                                                <th className="border border-gray-300 px-4 py-2 text-center">Доля</th>
+                                                <th className="border border-gray-300 px-4 py-2 text-left">Визуализация</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {budgetBreakdown.map((item, idx) => (
+                                                <tr key={idx} className="hover:bg-gray-50">
+                                                    <td className="border border-gray-300 px-4 py-2">{item.category}</td>
+                                                    <td className="border border-gray-300 px-4 py-2 text-right font-semibold">{item.amount}</td>
+                                                    <td className="border border-gray-300 px-4 py-2 text-center">{item.percent}</td>
+                                                    <td className="border border-gray-300 px-4 py-2">
+                                                        <div className="w-full bg-gray-200 rounded-full h-4">
+                                                            <div 
+                                                                className="bg-blue-600 h-4 rounded-full"
+                                                                style={{ width: item.percent }}
+                                                            ></div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4">
+                                    <h4 className="font-bold text-yellow-900 mb-2">Ключевые статьи расходов:</h4>
+                                    <ul className="space-y-1 text-sm text-yellow-800">
+                                        <li>• Этап 2.1: Оборудование и лицензии - 13 000 ₽</li>
+                                        <li>• Этап 3: Консолидация баз 1С - 10 000 ₽</li>
+                                        <li>• Этап 4: ПО для управления платежами - 3 314 ₽</li>
+                                        <li>• Прочие расходы (1С:Архив, модули распознавания) - 1 117 ₽</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const App = () => {
+            return <ProjectDashboard />;
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
